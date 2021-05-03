@@ -249,7 +249,7 @@ Rakenduses käivitatakse sessioon, kus:
 - `Yii::$app->user->id` kasutaja kood rakenduses (mitte kasutaja id VAU-s)
 - `Yii::$app->user->identity->vauData` **ei ole olemas** (kasutada saab `$app->user->identity->eesnimi` jne)
 
-Kui me soovime, et kasutaja andmed rakenduses oleksid sünkronitud kasutaja andmetega VAU-s, lülitame sisse `authOptions['dataMapping']['update']` ja kaardistame seosed VAU ja rakenduse andmete vahel `authOptions['dataMapping']['attributes']` abil. Sellise seadistuse korral kirjutatakse rakenduse andmed üle VAU andmetege iga kord, kui kasutaja VAU kaudu rakendusse siseneb:
+Kui me soovime, et kasutaja andmed rakenduses oleksid sünkroonitud kasutaja andmetega VAU-s, lülitame sisse `authOptions['dataMapping']['update']` ja kaardistame seosed VAU ja rakenduse andmete vahel `authOptions['dataMapping']['attributes']` abil. Sellise seadistuse korral kirjutatakse rakenduse andmed üle VAU andmetege iga kord, kui kasutaja VAU kaudu rakendusse siseneb:
 
 ```php
 public function actions()
