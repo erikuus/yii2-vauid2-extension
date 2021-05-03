@@ -275,7 +275,7 @@ public function actions()
 }
 ```
 
-Pane tähele, et kui sa määrad seose ka roles jaoks, on väärtuse tüüp `array`. Mõistagi ei saa seda otse andmebaasi salvestada. Küll aga saab selle väärtusega manipuleerida Kasutaja klassis vastavalt vajadusele.
+Pane tähele, et kui sa määrad seose ka `roles` jaoks, on väärtuse tüüp `array`. Mõistagi ei saa seda otse andmebaasi salvestada. Küll aga saab selle väärtusega manipuleerida Kasutaja klassis vastavalt vajadusele.
 
 Kõik ülaltoodud seadistused lubavad rakendusse siseneda ainult neil VAU kasutajatel, kelle VAU ID on juba rakenduse andmebaasis kirjas. Lülitades sisse `authOptions['dataMapping']['create']` lubame siseneda ka uutel kasutajatel: kui tabelist kasutaja ei leita rida, kus `vau_kood` võrdub VAU kasutaja ID-ga, luuakse tabelisse VAU andmete alusel uus rida, uus kasutaja:
 
