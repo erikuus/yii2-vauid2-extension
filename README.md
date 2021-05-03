@@ -209,7 +209,7 @@ $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/logout", "https");
 echo Html::a("Logout", "http://www.ra.ee/vau/index.php/site/logout?remoteUrl=" . $remoteUrl;
 ```
 
-Nüüd, kui me soovime teha nii, et rakenduse kasutajad on vastavuses VAU kasutajatega ja rakendusse sisselogimine käib VAU kaudu, siis peame kõigepealt lisama tabelisse uue tulba VAU kasutaja ID jaoks (mõistagi tuleb vastavalt täidendada ka klassi Kasutaja):
+Nüüd, kui me soovime teha nii, et rakenduse kasutajad on vastavuses VAU kasutajatega ja rakendusse sisselogimine käib VAU kaudu, siis peame kõigepealt lisama tabelisse uue tulba VAU kasutaja ID jaoks:
 
 ```sql
 CREATE TABLE kasutaja
@@ -246,7 +246,7 @@ public function actions()
 Sellise seadistuse puhul õnnestub VAU kaudu rakendusse sisse logida ainult neil VAU kasutajatel, kelle ID leidub tabeli `kasutaja` väljal `vau_kood`.
 Rakenduses käivitatakse sessioon, kus:
 
-- `Yii::$app->user->id kasutaja` kood rakenduses (mitte kasutaja id VAU-s)
+- `Yii::$app->user->id` kasutaja kood rakenduses (mitte kasutaja id VAU-s)
 - `Yii::$app->user->identity->vauData` **ei ole olemas** (kasutada saab `$app->user->identity->eesnimi` jne)
 
 Kui me soovime, et kasutaja andmed rakenduses oleksid sünkronitud kasutaja andmetega VAU-s, lülitame sisse `authOptions['dataMapping']['update']` ja kaardistame seosed VAU ja rakenduse andmete vahel `authOptions['dataMapping']['attributes']` abil. Sellise seadistuse korral kirjutatakse rakenduse andmed üle VAU andmetege iga kord, kui kasutaja VAU kaudu rakendusse siseneb:
