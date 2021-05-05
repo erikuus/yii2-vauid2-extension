@@ -5,7 +5,7 @@ Minimaalne seadistus
 --------------------
 *Selle seadistuse puhul ei vaja rakendus eraldi kasutaja mudelit ja tabelit*
 
-Määra konfiguratsioonifailis `user` komponendi identityClass väärtuseks `ra\vauid\VauUserIdentity`:
+Määra konfiguratsioonifailis `user` komponendi `identityClass` väärtuseks `ra\vauid\VauUserIdentity`:
 
 ```php
 'user' => [
@@ -35,7 +35,7 @@ public function actions()
 }
 ```
 
-Suuna `SiteController::actionLogin` VauID sisselogimise teenuse aadressile, määrates remoteUrl väärtuseks eelnevalt defineeritud aktsiooni `SiteController::vauLogin`:
+Suuna `SiteController::actionLogin` VauID sisselogimise teenuse aadressile, määrates `remoteUrl` väärtuseks eelnevalt defineeritud aktsiooni `SiteController::vauLogin`:
 
 ```php
 public function actionLogin()
@@ -192,7 +192,7 @@ Sarnaselt minimaalse seadistusega lisa konfiguratsioonifailis komponentide hulka
 ]
 ```
 
-Suuna `SiteController::actionLogin` VauID sisselogimise teenuse aadressile, määrates remoteUrl väärtuseks aktsiooni `SiteController::vauLogin`:
+Suuna `SiteController::actionLogin` VauID sisselogimise teenuse aadressile, määrates `remoteUrl` väärtuseks aktsiooni `SiteController::vauLogin`:
 
 ```php
 public function actionLogin()
@@ -202,7 +202,7 @@ public function actionLogin()
 }
 ```
 
-Suuna väljalogimise link VauID väljalogimise teenuse aadressile, määrates remoteUrl väärtuseks `SiteController::actionLogout`:
+Suuna väljalogimise link VauID väljalogimise teenuse aadressile, määrates `remoteUrl` väärtuseks `SiteController::actionLogout`:
 
 ```php
 $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/logout", "https");
@@ -249,7 +249,7 @@ Rakenduses käivitatakse sessioon, kus:
 - `Yii::$app->user->id` kasutaja kood rakenduses (mitte kasutaja id VAU-s)
 - `Yii::$app->user->identity->vauData` **ei ole olemas** (kasutada saab `$app->user->identity->eesnimi` jne)
 
-Kui me soovime, et kasutaja andmed rakenduses oleksid sünkroonitud kasutaja andmetega VAU-s, lülitame sisse `authOptions['dataMapping']['update']` ja kaardistame seosed VAU ja rakenduse andmete vahel `authOptions['dataMapping']['attributes']` abil. Sellise seadistuse korral kirjutatakse rakenduse andmed üle VAU andmetege iga kord, kui kasutaja VAU kaudu rakendusse siseneb:
+Kui me soovime, et kasutaja andmed rakenduses oleksid sünkroonitud kasutaja andmetega VAU-s, lülitame sisse `authOptions['dataMapping']['update']` ja kaardistame seosed VAU ja rakenduse andmete vahel `authOptions['dataMapping']['attributes']` abil. Sellise seadistuse korral kirjutatakse rakenduse andmed üle VAU andmetega iga kord, kui kasutaja VAU kaudu rakendusse siseneb:
 
 ```php
 public function actions()
@@ -275,9 +275,9 @@ public function actions()
 }
 ```
 
-Pane tähele, et kui sa määrad seose ka `roles` jaoks, on väärtuse tüüp `array`. Mõistagi ei saa seda otse andmebaasi salvestada. Küll aga saab selle väärtusega manipuleerida Kasutaja klassis vastavalt vajadusele.
+Pane tähele, et kui sa määrad seose ka `roles` jaoks, on väärtuse tüüp `array`. Mõistagi ei saa seda otse andmebaasi salvestada. Küll aga saab selle väärtusega manipuleerida `Kasutaja` klassis vastavalt vajadusele.
 
-Kõik ülaltoodud seadistused lubavad rakendusse siseneda ainult neil VAU kasutajatel, kelle VAU ID on juba rakenduse andmebaasis kirjas. Lülitades sisse `authOptions['dataMapping']['create']` lubame siseneda ka uutel kasutajatel: kui tabelist kasutaja ei leita rida, kus `vau_kood` võrdub VAU kasutaja ID-ga, luuakse tabelisse VAU andmete alusel uus rida, uus kasutaja:
+Kõik ülaltoodud seadistused lubavad rakendusse siseneda ainult neil VAU kasutajatel, kelle VAU ID on juba rakenduse andmebaasis kirjas. Lülitades sisse `authOptions['dataMapping']['create']` lubame siseneda ka uutel kasutajatel: kui tabelist `kasutaja` ei leita rida, kus `vau_kood` võrdub VAU kasutaja ID-ga, luuakse tabelisse VAU andmete alusel uus rida, uus kasutaja:
 
 ```php
 public function actions()
@@ -304,7 +304,7 @@ public function actions()
 }
 ```
 
-Lõpuks on võimalik määrata ka `authOptions['dataMapping']['scenario']` abil stsenaarium VAU andmete salvestamiseks rakenduses. See võib-olla vajalik näiteks valideerimise reeglite määramisel, kui soovitakse VAU andmete jaoks teha mingeid erandeid:
+Lõpuks on võimalik määrata ka `authOptions['dataMapping']['scenario']` abil stsenaarium VAU andmete salvestamiseks rakenduses:
 
 ```php
 public function actions()
