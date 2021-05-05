@@ -1,5 +1,5 @@
 {
-	"name": "ra/vauid",
+	"name": "rahvusarhiiv/vauid",
 	"description": "Yii PHP Framework Version 2 - National Archives of Estonia Login Service",
     "type": "yii2-extension",
 	"keywords": ["yii", "login"],
@@ -19,6 +19,6 @@
 		"yiisoft/yii2": "*"
 	},
     "autoload": {
-        "psr-4": { "ra\\vauid\\": "" }
+        "psr-4": { "rahvusarhiiv\\vauid\\": "" }
     }
 }
