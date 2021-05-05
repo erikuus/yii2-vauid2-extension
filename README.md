@@ -9,16 +9,16 @@ Eelistatud paigaldus
 Alternatiivne paigaldus
 -----------------------
 
-Laadi kõik käesoleva repositooriumi failid alla ja paigalda rakenduse `vendor/ra/vauid/` kausta.
+Laadi kõik käesoleva repositooriumi failid alla ja paigalda rakenduse `vendor/rahvusarhiiv/vauid/` kausta.
 
 Lisa faili `vendor/yiisoft/extensions.php` järgmised read:
 
 ```php
-'ra/vauid' => [
-    'name' => 'ra/vauid',
+'rahvusarhiiv/vauid' => [
+    'name' => 'rahvusarhiiv/vauid',
     'version' => '9999999-dev',
     'alias' => [
-        '@ra/vauid' => $vendorDir . '/ra/vauid',
+        '@rahvusarhiiv/vauid' => $vendorDir . '/rahvusarhiiv/vauid',
     ],
 ],
 ```
@@ -27,19 +27,19 @@ Minimaalne seadistus
 --------------------
 *Selle seadistuse puhul ei vaja rakendus eraldi kasutaja mudelit ja tabelit*
 
-Määra konfiguratsioonifailis `user` komponendi `identityClass` väärtuseks `ra\vauid\VauUserIdentity`:
+Määra konfiguratsioonifailis `user` komponendi `identityClass` väärtuseks `rahvusarhiiv\vauid\VauUserIdentity`:
 
 ```php
 'user' => [
-    'identityClass' => 'ra\vauid\VauUserIdentity'
+    'identityClass' => 'rahvusarhiiv\vauid\VauUserIdentity'
 ]
 ```
 
-Lisa konfiguratsioonifailis komponentide hulka `ra\vauid\VauSecurityManager`, kus `###` asemel on salajane võti:
+Lisa konfiguratsioonifailis komponentide hulka `rahvusarhiiv\vauid\VauSecurityManager`, kus `###` asemel on salajane võti:
 
 ```php
 'vauSecurityManager' => [
-    'class' => 'ra\vauid\VauSecurityManager',
+    'class' => 'rahvusarhiiv\vauid\VauSecurityManager',
     'validationKey' => '###'
 ]
 ```
@@ -51,7 +51,7 @@ public function actions()
 {
     return [
         'vauLogin' => [
-            'class' => 'ra\vauid\VauLoginAction'
+            'class' => 'rahvusarhiiv\vauid\VauLoginAction'
         ]
     ];
 }
@@ -81,7 +81,7 @@ Sellise seadistuse puhul loob laiendus pärast edukat VAU kaudu sisselogimist ra
 
 Juurdepääsu piiramine
 ---------------------
-*`ra\vauid\VauLoginAction` parameetri `authOptions` kaudu saab piirata, kes ja kuidas võivad VAU kaudu rakendusse siseneda*
+*`rahvusarhiiv\vauid\VauLoginAction` parameetri `authOptions` kaudu saab piirata, kes ja kuidas võivad VAU kaudu rakendusse siseneda*
 
 Kui `authOptions['accessRules']['safelogin'] === true`, siis autoriseeritakse ainult kasutajad, kes autentisid ennast VAU-s ID-kaardi, Mobiil-ID või Smart-ID kaudu:
 
@@ -90,7 +90,7 @@ public function actions()
 {
     return [
         'vauLogin' => [
-            'class' => 'ra\vauid\VauLoginAction',
+            'class' => 'rahvusarhiiv\vauid\VauLoginAction',
             'authOptions' => [
                 'accessRules' => [
                     'safelogin' => true
@@ -108,7 +108,7 @@ public function actions()
 {
     return [
         'vauLogin' => [
-            'class' => 'ra\vauid\VauLoginAction',
+            'class' => 'rahvusarhiiv\vauid\VauLoginAction',
             'authOptions' => [
                 'accessRules' => [
                     'safehost' => true
@@ -127,7 +127,7 @@ public function actions()
 {
     return [
         'vauLogin' => [
-            'class' => 'ra\vauid\VauLoginAction',
+            'class' => 'rahvusarhiiv\vauid\VauLoginAction',
             'authOptions' => [
                 'accessRules' => [
                     'safe' => true
@@ -145,7 +145,7 @@ public function actions()
 {
     return [
         'vauLogin' => [
-            'class' => 'ra\vauid\VauLoginAction',
+            'class' => 'rahvusarhiiv\vauid\VauLoginAction',
             'authOptions' => [
                 'accessRules' => [
                     'employee' => true
@@ -163,7 +163,7 @@ public function actions()
 {
     return [
         'vauLogin' => [
-            'class' => 'ra\vauid\VauLoginAction',
+            'class' => 'rahvusarhiiv\vauid\VauLoginAction',
             'authOptions' => [
                 'accessRules' => [
                     'roles' => [
@@ -205,11 +205,11 @@ See klass on konfiguratsioonifailis `user` komponendi `identityClass`:
 ]
 ```
 
-Sarnaselt minimaalse seadistusega lisa konfiguratsioonifailis komponentide hulka `ra\vauid\VauSecurityManager`, kus `###` asemel on salajane võti:
+Sarnaselt minimaalse seadistusega lisa konfiguratsioonifailis komponentide hulka `rahvusarhiiv\vauid\VauSecurityManager`, kus `###` asemel on salajane võti:
 
 ```php
 'vauSecurityManager' => [
-    'class' => 'ra\vauid\VauSecurityManager',
+    'class' => 'rahvusarhiiv\vauid\VauSecurityManager',
     'validationKey' => '###'
 ]
 ```
@@ -246,14 +246,14 @@ CREATE TABLE kasutaja
 )
 ```
 
-Alustame kõige lihtsamast kasutusjuhust. Loome seose rakenduse kasutaja ja VAU kasutaja vahele käsitsi, lisades väljale vau_kood kasutaja ID VAU andmebaasis. Kui see on tehtud, määrame `ra\vauid\VauLoginAction` parameetri `dataMapping` järgmiselt:
+Alustame kõige lihtsamast kasutusjuhust. Loome seose rakenduse kasutaja ja VAU kasutaja vahele käsitsi, lisades väljale vau_kood kasutaja ID VAU andmebaasis. Kui see on tehtud, määrame `rahvusarhiiv\vauid\VauLoginAction` parameetri `dataMapping` järgmiselt:
 
 ```php
 public function actions()
 {
     return [
         'vauLogin' => [
-            'class' => 'ra\vauid\VauLoginAction',
+            'class' => 'rahvusarhiiv\vauid\VauLoginAction',
             'authOptions' => [
                 'dataMapping' => [
                     'model' => 'app\models\Kasutaja',
@@ -278,7 +278,7 @@ public function actions()
 {
     return [
         'vauLogin' => [
-            'class' => 'ra\vauid\VauLoginAction',
+            'class' => 'rahvusarhiiv\vauid\VauLoginAction',
             'authOptions' => [
                 'dataMapping' => [
                     'model' => 'app\models\Kasutaja',
@@ -306,7 +306,7 @@ public function actions()
 {
     return [
         'vauLogin' => [
-            'class' => 'ra\vauid\VauLoginAction',
+            'class' => 'rahvusarhiiv\vauid\VauLoginAction',
             'authOptions' => [
                 'dataMapping' => [
                     'model' => 'app\models\Kasutaja',
@@ -333,7 +333,7 @@ public function actions()
 {
     return [
         'vauLogin' => [
-            'class' => 'ra\vauid\VauLoginAction',
+            'class' => 'rahvusarhiiv\vauid\VauLoginAction',
             'authOptions' => [
                 'dataMapping' => [
                     'model' => 'app\models\Kasutaja',
