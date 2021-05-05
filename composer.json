@@ -1,0 +1,24 @@
+{
+	"name": "ra/vauid",
+	"description": "Yii PHP Framework Version 2 - National Archives of Estonia Login Service",
+    "type": "yii2-extension",
+	"keywords": ["yii", "login"],
+	"license": "MIT",
+    "support": {
+		"issues": "https://github.com/erikuus/yii2-vauid2-extension/issues",
+		"source": "https://github.com/erikuus/yii2-vauid2-extension"
+    },
+	"authors": [
+		{
+			"name": "Erik Uus",
+			"homepage": "http://www.ra.ee/"
+		}
+	],
+	"require": {
+		"php": ">=5.4.0",
+		"yiisoft/yii2": "*"
+	},
+    "autoload": {
+        "psr-4": { "ra\\vauid\\": "" }
+    }
+}

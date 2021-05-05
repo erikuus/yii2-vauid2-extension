@@ -1,6 +1,28 @@
 Yii 2 raamistiku laiendus VauID versiooni 2.0 kasutamiseks
 ==========================================================
 
+Eelistatud paigaldus
+--------------------
+
+...
+
+Alternatiivne paigaldus
+-----------------------
+
+Laadi kõik käesoleva repositooriumi failid alla ja paigalda rakenduse `vendor/ra/vauid/` kausta.
+
+Lisa faili `vendor/yiisoft/extensions.php` järgmised read:
+
+```php
+'ra/vauid' => [
+    'name' => 'ra/vauid',
+    'version' => '9999999-dev',
+    'alias' => [
+        '@ra/vauid' => $vendorDir . '/ra/vauid',
+    ],
+],
+```
+
 Minimaalne seadistus
 --------------------
 *Selle seadistuse puhul ei vaja rakendus eraldi kasutaja mudelit ja tabelit*
