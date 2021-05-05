@@ -5,8 +5,7 @@
  *
  * VauUserIdentity class authenticates user based on VauID 2.0 protocol
  *
- * For usage refer to {@link VauLoginAction}
- *
+ * @link https://github.com/erikuus/yii2-vauid2-extension#readme
  * @link http://www.ra.ee/apps/vauid/
  * @author Erik Uus <erik.uus@gmail.com>
  * @version 1.0

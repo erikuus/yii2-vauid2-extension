@@ -5,41 +5,7 @@
  *
  * VauLoginAction makes use of {@link VauSecurityManager} and {@link VauUserIdentity} to authenticate user based on VauID 2.0 protocol
  *
- * First configure security manager component.
- * <pre>
- * 'components' => [
- *     'vauSecurityManager' => [
- *         'class' => 'ra\vauid\VauSecurityManager',
- *         'validationKey' => '###'
- *     ]
- * ]
- * </pre>
- *
- * Now set up 'vauLogin' action in application SiteController.
- * <pre>
- * public function actions()
- * {
- *     return [
- *         'vauLogin' => [
- *             'class' => 'ra\vauid\VauLoginAction'
- *         ]
- *     ];
- * }
- * </pre>
- *
- * Next redirect your login action as follows.
- * <pre>
- * public function actionLogin()
- * {
- *     $this->redirect('http://www.ra.ee/vau/index.php/site/login?v=2&s=user&remoteUrl=' . Yii::$app->urlManager->createAbsoluteUrl('/site/vauLogin', 'https'));
- * }
- * </pre>
- *
- * Finally point logout link as follows.
- * <pre>
- * echo Html::a('Logout', 'http://www.ra.ee/vau/index.php/site/logout?remoteUrl=' . Yii::$app->urlManager->createAbsoluteUrl('site/logout', 'https'));
- * </pre>
- *
+ * @link https://github.com/erikuus/yii2-vauid2-extension#readme
  * @link http://www.ra.ee/apps/vauid/
  * @author Erik Uus <erik.uus@gmail.com>
  * @version 1.0
