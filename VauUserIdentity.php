@@ -52,55 +52,25 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
      */
     private $_keyPrefix;
     /**
-     * @var Component|null the user model.
+     * @var Component the user model.
      */
     private $_user;
 
-    /**
-     * {@inheritdoc}
-     */
+    public function getUser()
+    {
+        return $this->_user;
+    }
+
     public function getId()
     {
         return $this->getState('__id');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function findIdentity($id)
     {
         $selfInstance = new self();
         $data = $selfInstance->getState('__data', []);
         return new static(['vauData' => $data]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthKey()
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateAuthKey($authKey)
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-    }
-
-    /**
-     * @return User|null
-     */
-    public function getUser()
-    {
-        return $this->_user;
     }
 
     /**
@@ -357,5 +327,17 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
     protected function setStateKeyPrefix($value)
     {
         $this->_keyPrefix=$value;
+    }
+
+    public function getAuthKey()
+    {
+    }
+
+    public function validateAuthKey($authKey)
+    {
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
     }
 }

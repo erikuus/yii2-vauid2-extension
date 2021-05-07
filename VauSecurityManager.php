@@ -18,10 +18,6 @@ class VauSecurityManager extends Component
 {
     private $_key;
 
-    /**
-     * @param string $value the key used to decrypt VAU response
-     * @throws InvalidConfigException if the key is empty
-     */
     public function setValidationKey($value)
     {
         if (!empty($value)) {
@@ -41,6 +37,14 @@ class VauSecurityManager extends Component
         return bin2hex($this->linencrypt($data));
     }
 
+    protected function linencrypt($data)
+    {
+        $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+        $encrypted = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->_key, $data, MCRYPT_MODE_ECB, $iv);
+        return $encrypted;
+    }
+
     /**
      * Decryptes data posted by VAU after successful login.
      * @param string $postedData the encrypted data
@@ -51,22 +55,6 @@ class VauSecurityManager extends Component
         return $this->lindecrypt(hex2bin($postedData));
     }
 
-    /**
-     * @param string $data the data to be crypted
-     * @return string encrypted data
-     */
-    public function linencrypt($data)
-    {
-        $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-        $encrypted = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->_key, $data, MCRYPT_MODE_ECB, $iv);
-        return $encrypted;
-    }
-
-    /**
-     * @param string $encrypted the encrypted data
-     * @return string decrypted data
-     */
     protected function lindecrypt($encrypted)
     {
         $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);

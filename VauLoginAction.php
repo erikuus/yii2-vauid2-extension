@@ -37,12 +37,12 @@ class VauLoginAction extends Action
      */
     public $authOptions = [];
     /**
-     * @var boolean $enableLogging whether to log failed login requests.
+     * @var boolean $enableLogging whether to log failed login requests
      */
     public $enableLogging = false;
 
     /**
-     * {@inheritdoc}
+     * Disables csrf validation to handle VAU POST request
      */
     public function init()
     {
@@ -50,7 +50,7 @@ class VauLoginAction extends Action
     }
 
     /**
-     * Logins user into application based on data posted by VAU after successful login in VAU.
+     * Logins user into application based on data posted by VAU after successful login
      */
     public function run()
     {
