@@ -9,7 +9,7 @@
  * @version 1.0
  */
 
-namespace ra\vauid;
+namespace rahvusarhiiv\vauid;
 
 use Yii;
 use yii\base\Action;
@@ -17,7 +17,7 @@ use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
-use ra\vauid\VauUserIdentity;
+use rahvusarhiiv\vauid\VauUserIdentity;
 
 class VauLoginAction extends Action
 {

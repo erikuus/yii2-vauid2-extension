@@ -9,7 +9,7 @@
  * @version 1.0
  */
 
-namespace ra\vauid;
+namespace rahvusarhiiv\vauid;
 
 use Yii;
 use yii\base\Exception;

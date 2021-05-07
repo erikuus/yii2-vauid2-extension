@@ -9,7 +9,7 @@
  * @version 1.0
  */
 
-namespace ra\vauid;
+namespace rahvusarhiiv\vauid;
 
 use yii\base\Component;
 use yii\base\InvalidConfigException;
