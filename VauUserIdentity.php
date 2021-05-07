@@ -1,12 +1,10 @@
 <?php
 
 /**
- * VauUserIdentity class file.
- *
  * VauUserIdentity class authenticates user based on VauID 2.0 protocol
  *
- * @link https://github.com/erikuus/yii2-vauid2-extension#readme
  * @link http://www.ra.ee/apps/vauid/
+ * @link https://github.com/erikuus/yii2-vauid2-extension#readme
  * @author Erik Uus <erik.uus@gmail.com>
  * @version 1.0
  */

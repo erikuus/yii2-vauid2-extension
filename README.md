@@ -4,7 +4,32 @@ Yii 2 raamistiku laiendus VauID versiooni 2.0 kasutamiseks
 Eelistatud paigaldus
 --------------------
 
-...
+Eelistatud paigaldusviis on `composeri` kaudu.
+
+Lisa rakenduse `composer.json` faili paketi nimi ja versioon:
+
+```json
+"require": {
+    "rahvusarhiiv/vauid":"1.0"
+}
+```
+
+ja githubi repositoorium:
+
+```json
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/erikuus/yii2-vauid2-extension"
+    }
+]
+```
+
+Seejärel jooksuta terminalis käsku
+
+```shell
+composer update
+```
 
 Alternatiivne paigaldus
 -----------------------
@@ -16,7 +41,7 @@ Lisa faili `vendor/yiisoft/extensions.php` järgmised read:
 ```php
 'rahvusarhiiv/vauid' => [
     'name' => 'rahvusarhiiv/vauid',
-    'version' => '9999999-dev',
+    'version' => '1.0.0.0',
     'alias' => [
         '@rahvusarhiiv/vauid' => $vendorDir . '/rahvusarhiiv/vauid',
     ],
