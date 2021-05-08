@@ -109,7 +109,7 @@ Sellise seadistuse puhul loob laiendus pärast edukat VAU kaudu sisselogimist ra
 
 Juurdepääsu piiramine
 ---------------------
-*rahvusarhiiv\vauid\VauLoginAction** parameetri **authOptions** kaudu saab piirata, kes ja kuidas võivad VAU kaudu rakendusse siseneda*
+*Spetsiaalse parameetri kaudu saab piirata, kes ja kuidas võivad VAU kaudu rakendusse siseneda*
 
 Kui **authOptions['accessRules']['safelogin'] === true**, siis autoriseeritakse ainult kasutajad, kes autentisid ennast VAU-s ID-kaardi, Mobiil-ID või Smart-ID kaudu:
 
