@@ -7,9 +7,9 @@ https://github.com/erikuus/yii2-vauid2-extension
 Eelistatud paigaldus
 --------------------
 
-Eelistatud paigaldusviis on `composeri` kaudu.
+Eelistatud paigaldusviis on *composeri* kaudu.
 
-Lisa rakenduse `composer.json` faili paketi nimi ja versioon:
+Lisa rakenduse *composer.json* faili paketi nimi ja versioon:
 
 ```json
 "require": {
@@ -37,9 +37,9 @@ composer update
 Alternatiivne paigaldus
 -----------------------
 
-Laadi kõik laienduse failid Githubist alla ja paigalda rakenduse `vendor/rahvusarhiiv/vauid/` kausta.
+Laadi kõik laienduse failid Githubist alla ja paigalda rakenduse *vendor/rahvusarhiiv/vauid/* kausta.
 
-Lisa faili `vendor/yiisoft/extensions.php` järgmised read:
+Lisa faili *vendor/yiisoft/extensions.php* järgmised read:
 
 ```php
 'rahvusarhiiv/vauid' => [
@@ -55,7 +55,7 @@ Minimaalne seadistus
 --------------------
 *Selle seadistuse puhul ei vaja rakendus eraldi kasutaja mudelit ja tabelit*
 
-Määra konfiguratsioonifailis `user` komponendi `identityClass` väärtuseks `rahvusarhiiv\vauid\VauUserIdentity`:
+Määra konfiguratsioonifailis *user* komponendi *identityClass* väärtuseks *rahvusarhiiv\vauid\VauUserIdentity*:
 
 ```php
 'user' => [
@@ -63,7 +63,7 @@ Määra konfiguratsioonifailis `user` komponendi `identityClass` väärtuseks `r
 ]
 ```
 
-Lisa konfiguratsioonifailis komponentide hulka `rahvusarhiiv\vauid\VauSecurityManager`, kus `###` asemel on salajane võti:
+Lisa konfiguratsioonifailis komponentide hulka *rahvusarhiiv\vauid\VauSecurityManager*, kus *###* asemel on salajane võti:
 
 ```php
 'vauSecurityManager' => [
@@ -72,7 +72,7 @@ Lisa konfiguratsioonifailis komponentide hulka `rahvusarhiiv\vauid\VauSecurityMa
 ]
 ```
 
-Seadista `SiteController::actions()` järgmiselt:
+Seadista *SiteController::actions()* järgmiselt:
 
 ```php
 public function actions()
@@ -85,7 +85,7 @@ public function actions()
 }
 ```
 
-Suuna `SiteController::actionLogin` VauID sisselogimise teenuse aadressile, määrates `remoteUrl` väärtuseks eelnevalt defineeritud aktsiooni `SiteController::vauLogin`:
+Suuna *SiteController::actionLogin* VauID sisselogimise teenuse aadressile, määrates *remoteUrl* väärtuseks eelnevalt defineeritud aktsiooni *SiteController::vauLogin*:
 
 ```php
 public function actionLogin()
@@ -95,7 +95,7 @@ public function actionLogin()
 }
 ```
 
-Suuna väljalogimise link VauID väljalogimise teenuse aadressile, määrates `remoteUrl` väärtuseks `SiteController::actionLogout`:
+Suuna väljalogimise link VauID väljalogimise teenuse aadressile, määrates *remoteUrl* väärtuseks *SiteController::actionLogout*:
 
 ```php
 $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/logout", "https");
@@ -104,14 +104,14 @@ echo Html::a("Logout", "http://www.ra.ee/vau/index.php/site/logout?remoteUrl=" .
 
 Sellise seadistuse puhul loob laiendus pärast edukat VAU kaudu sisselogimist rakenduses sessiooni, kus:
 
-- `Yii::$app->user->id` kasutaja id VAU-s
-- `Yii::$app->user->identity->vauData` massiiv, mis sisaldab kõiki VAU saadetud andmeid kasutaja kohta
+- *Yii::$app->user->id* kasutaja id VAU-s
+- *Yii::$app->user->identity->vauData* massiiv, mis sisaldab kõiki VAU saadetud andmeid kasutaja kohta
 
 Juurdepääsu piiramine
 ---------------------
-*`rahvusarhiiv\vauid\VauLoginAction` parameetri `authOptions` kaudu saab piirata, kes ja kuidas võivad VAU kaudu rakendusse siseneda*
+**rahvusarhiiv\vauid\VauLoginAction* parameetri *authOptions* kaudu saab piirata, kes ja kuidas võivad VAU kaudu rakendusse siseneda*
 
-Kui `authOptions['accessRules']['safelogin'] === true`, siis autoriseeritakse ainult kasutajad, kes autentisid ennast VAU-s ID-kaardi, Mobiil-ID või Smart-ID kaudu:
+Kui *authOptions['accessRules']['safelogin'] === true*, siis autoriseeritakse ainult kasutajad, kes autentisid ennast VAU-s ID-kaardi, Mobiil-ID või Smart-ID kaudu:
 
 ```php
 public function actions()
@@ -129,7 +129,7 @@ public function actions()
 }
 ```
 
-Kui `authOptions['accessRules']['safehost'] === true`, siis autoriseeritakse ainult kasutajad, kes autentisid ennast arhiivi sisevõrgust:
+Kui *authOptions['accessRules']['safehost'] === true*, siis autoriseeritakse ainult kasutajad, kes autentisid ennast arhiivi sisevõrgust:
 
 ```php
 public function actions()
@@ -147,7 +147,7 @@ public function actions()
 }
 ```
 
-Kui `authOptions['accessRules']['safe'] === true`, siis autoriseeritakse ainult kasutajad, kes autentisid ennast ID-kaardi, Mobiil-ID, Smart-ID kaudu
+Kui *authOptions['accessRules']['safe'] === true*, siis autoriseeritakse ainult kasutajad, kes autentisid ennast ID-kaardi, Mobiil-ID, Smart-ID kaudu
 või arhiivi sisevõrgust:
 
 ```php
@@ -166,7 +166,7 @@ public function actions()
 }
 ```
 
-Kui `authOptions['accessRules']['employee'] === true`, siis autoriseeritakse ainult kasutajad, kellele on VAU-s antud töötaja õigused:
+Kui *authOptions['accessRules']['employee'] === true*, siis autoriseeritakse ainult kasutajad, kellele on VAU-s antud töötaja õigused:
 
 ```php
 public function actions()
@@ -184,7 +184,7 @@ public function actions()
 }
 ```
 
-Kui on defineeritud `authOptions['accessRules']['roles']`, siis autoriseeritakse ainult kasutajad, kellele on VAU-s määratud mõni neist rollidest:
+Kui on defineeritud *authOptions['accessRules']['roles']*, siis autoriseeritakse ainult kasutajad, kellele on VAU-s määratud mõni neist rollidest:
 
 ```php
 public function actions()
@@ -223,9 +223,9 @@ CREATE TABLE kasutaja
 )
 ```
 
-Rakenduses on sellest tabelist genereeritud `class Kasutaja extends \yii\db\ActiveRecord implements IdentityInterface`.
+Rakenduses on sellest tabelist genereeritud *class Kasutaja extends \yii\db\ActiveRecord implements IdentityInterface*.
 
-See klass on konfiguratsioonifailis `user` komponendi `identityClass`:
+See klass on konfiguratsioonifailis *user* komponendi *identityClass*:
 
 ```php
 'user' => [
@@ -233,7 +233,7 @@ See klass on konfiguratsioonifailis `user` komponendi `identityClass`:
 ]
 ```
 
-Sarnaselt minimaalse seadistusega lisa konfiguratsioonifailis komponentide hulka `rahvusarhiiv\vauid\VauSecurityManager`, kus `###` asemel on salajane võti:
+Sarnaselt minimaalse seadistusega lisa konfiguratsioonifailis komponentide hulka *rahvusarhiiv\vauid\VauSecurityManager*, kus *###* asemel on salajane võti:
 
 ```php
 'vauSecurityManager' => [
@@ -242,7 +242,7 @@ Sarnaselt minimaalse seadistusega lisa konfiguratsioonifailis komponentide hulka
 ]
 ```
 
-Suuna `SiteController::actionLogin` VauID sisselogimise teenuse aadressile, määrates `remoteUrl` väärtuseks aktsiooni `SiteController::vauLogin`:
+Suuna *SiteController::actionLogin* VauID sisselogimise teenuse aadressile, määrates *remoteUrl* väärtuseks aktsiooni *SiteController::vauLogin*:
 
 ```php
 public function actionLogin()
@@ -252,7 +252,7 @@ public function actionLogin()
 }
 ```
 
-Suuna väljalogimise link VauID väljalogimise teenuse aadressile, määrates `remoteUrl` väärtuseks `SiteController::actionLogout`:
+Suuna väljalogimise link VauID väljalogimise teenuse aadressile, määrates *remoteUrl* väärtuseks *SiteController::actionLogout*:
 
 ```php
 $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/logout", "https");
@@ -274,7 +274,7 @@ CREATE TABLE kasutaja
 )
 ```
 
-Alustame kõige lihtsamast kasutusjuhust. Loome seose rakenduse kasutaja ja VAU kasutaja vahele käsitsi, lisades väljale vau_kood kasutaja ID VAU andmebaasis. Kui see on tehtud, määrame `rahvusarhiiv\vauid\VauLoginAction` parameetri `dataMapping` järgmiselt:
+Alustame kõige lihtsamast kasutusjuhust. Loome seose rakenduse kasutaja ja VAU kasutaja vahele käsitsi, lisades väljale vau_kood kasutaja ID VAU andmebaasis. Kui see on tehtud, määrame *rahvusarhiiv\vauid\VauLoginAction* parameetri *dataMapping* järgmiselt:
 
 ```php
 public function actions()
@@ -293,13 +293,13 @@ public function actions()
 }
 ```
 
-Sellise seadistuse puhul õnnestub VAU kaudu rakendusse sisse logida ainult neil VAU kasutajatel, kelle ID leidub tabeli `kasutaja` väljal `vau_kood`.
+Sellise seadistuse puhul õnnestub VAU kaudu rakendusse sisse logida ainult neil VAU kasutajatel, kelle ID leidub tabeli *kasutaja* väljal *vau_kood*.
 Rakenduses käivitatakse sessioon, kus:
 
-- `Yii::$app->user->id` kasutaja kood rakenduses (mitte kasutaja id VAU-s)
-- `Yii::$app->user->identity->vauData` **ei ole olemas** (kasutada saab `$app->user->identity->eesnimi` jne)
+- *Yii::$app->user->id* kasutaja kood rakenduses (mitte kasutaja id VAU-s)
+- *Yii::$app->user->identity->vauData* **ei ole olemas** (kasutada saab *$app->user->identity->eesnimi* jne)
 
-Kui me soovime, et kasutaja andmed rakenduses oleksid sünkroonitud kasutaja andmetega VAU-s, lülitame sisse `authOptions['dataMapping']['update']` ja kaardistame seosed VAU ja rakenduse andmete vahel `authOptions['dataMapping']['attributes']` abil. Sellise seadistuse korral kirjutatakse rakenduse andmed üle VAU andmetega iga kord, kui kasutaja VAU kaudu rakendusse siseneb:
+Kui me soovime, et kasutaja andmed rakenduses oleksid sünkroonitud kasutaja andmetega VAU-s, lülitame sisse *authOptions['dataMapping']['update']* ja kaardistame seosed VAU ja rakenduse andmete vahel *authOptions['dataMapping']['attributes']* abil. Sellise seadistuse korral kirjutatakse rakenduse andmed üle VAU andmetega iga kord, kui kasutaja VAU kaudu rakendusse siseneb:
 
 ```php
 public function actions()
@@ -325,9 +325,9 @@ public function actions()
 }
 ```
 
-Pane tähele, et kui sa määrad seose ka `roles` jaoks, on väärtuse tüüp `array`. Mõistagi ei saa seda otse andmebaasi salvestada. Küll aga saab selle väärtusega manipuleerida `Kasutaja` klassis vastavalt vajadusele.
+Pane tähele, et kui sa määrad seose ka *roles* jaoks, on väärtuse tüüp *array*. Mõistagi ei saa seda otse andmebaasi salvestada. Küll aga saab selle väärtusega manipuleerida *Kasutaja* klassis vastavalt vajadusele.
 
-Kõik ülaltoodud seadistused lubavad rakendusse siseneda ainult neil VAU kasutajatel, kelle VAU ID on juba rakenduse andmebaasis kirjas. Lülitades sisse `authOptions['dataMapping']['create']` lubame siseneda ka uutel kasutajatel: kui tabelist `kasutaja` ei leita rida, kus `vau_kood` võrdub VAU kasutaja ID-ga, luuakse tabelisse VAU andmete alusel uus rida, uus kasutaja:
+Kõik ülaltoodud seadistused lubavad rakendusse siseneda ainult neil VAU kasutajatel, kelle VAU ID on juba rakenduse andmebaasis kirjas. Lülitades sisse *authOptions['dataMapping']['create']* lubame siseneda ka uutel kasutajatel: kui tabelist *kasutaja* ei leita rida, kus *vau_kood* võrdub VAU kasutaja ID-ga, luuakse tabelisse VAU andmete alusel uus rida, uus kasutaja:
 
 ```php
 public function actions()
@@ -354,7 +354,7 @@ public function actions()
 }
 ```
 
-Lõpuks on võimalik määrata ka `authOptions['dataMapping']['scenario']` abil stsenaarium VAU andmete salvestamiseks rakenduses:
+Lõpuks on võimalik määrata ka *authOptions['dataMapping']['scenario']* abil stsenaarium VAU andmete salvestamiseks rakenduses:
 
 ```php
 public function actions()
