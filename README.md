@@ -91,7 +91,7 @@ Suuna **SiteController::actionLogin** VauID sisselogimise teenuse aadressile, m�
 public function actionLogin()
 {
     $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/vauLogin", "https");
-    $this->redirect("http://www.ra.ee/vau/index.php/site/login?v=2&s=user&remoteUrl" . $remoteUrl);
+    $this->redirect("https://www.ra.ee/vau/index.php/site/login?v=2&s=user_role&remoteUrl" . $remoteUrl);
 }
 ```
 
@@ -99,13 +99,13 @@ Suuna väljalogimise link VauID väljalogimise teenuse aadressile, määrates **
 
 ```php
 $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/logout", "https");
-echo Html::a("Logout", "http://www.ra.ee/vau/index.php/site/logout?remoteUrl=" . $remoteUrl;
+echo Html::a("Logout", "https://www.ra.ee/vau/index.php/site/logout?remoteUrl=" . $remoteUrl;
 ```
 
 Sellise seadistuse puhul loob laiendus pärast edukat VAU kaudu sisselogimist rakenduses sessiooni, kus:
 
-- **Yii::$app->user->id** kasutaja id VAU-s
-- **Yii::$app->user->identity->vauData** massiiv, mis sisaldab kõiki VAU saadetud andmeid kasutaja kohta
+- **Yii::$app->user->id** on kasutaja id VAU-s
+- **Yii::$app->user->identity->vauData** on massiiv, mis sisaldab kõiki VAU saadetud andmeid kasutaja kohta
 
 Juurdepääsu piiramine
 ---------------------
@@ -248,7 +248,7 @@ Suuna **SiteController::actionLogin** VauID sisselogimise teenuse aadressile, m�
 public function actionLogin()
 {
     $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/vauLogin", "https");
-    $this->redirect("http://www.ra.ee/vau/index.php/site/login?v=2&s=user&remoteUrl" . $remoteUrl);
+    $this->redirect("https://www.ra.ee/vau/index.php/site/login?v=2&s=user_role&remoteUrl" . $remoteUrl);
 }
 ```
 
@@ -256,7 +256,7 @@ Suuna väljalogimise link VauID väljalogimise teenuse aadressile, määrates **
 
 ```php
 $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/logout", "https");
-echo Html::a("Logout", "http://www.ra.ee/vau/index.php/site/logout?remoteUrl=" . $remoteUrl;
+echo Html::a("Logout", "https://www.ra.ee/vau/index.php/site/logout?remoteUrl=" . $remoteUrl;
 ```
 
 Nüüd, kui me soovime teha nii, et rakenduse kasutajad on vastavuses VAU kasutajatega ja rakendusse sisselogimine käib VAU kaudu, siis peame kõigepealt lisama tabelisse uue tulba VAU kasutaja ID jaoks:
@@ -274,7 +274,7 @@ CREATE TABLE kasutaja
 )
 ```
 
-Alustame kõige lihtsamast kasutusjuhust. Loome seose rakenduse kasutaja ja VAU kasutaja vahele käsitsi, lisades väljale vau_kood kasutaja ID VAU andmebaasis. Kui see on tehtud, määrame **rahvusarhiiv\vauid\VauLoginAction** parameetri **dataMapping** järgmiselt:
+Alustame kõige lihtsamast kasutusjuhust. Loome seose rakenduse kasutaja ja VAU kasutaja vahele käsitsi, lisades väljale **vau_kood** kasutaja ID VAU andmebaasis. Kui see on tehtud, määrame **rahvusarhiiv\vauid\VauLoginAction** parameetri **dataMapping** järgmiselt:
 
 ```php
 public function actions()
@@ -296,8 +296,8 @@ public function actions()
 Sellise seadistuse puhul õnnestub VAU kaudu rakendusse sisse logida ainult neil VAU kasutajatel, kelle ID leidub tabeli **kasutaja** väljal **vau_kood**.
 Rakenduses käivitatakse sessioon, kus:
 
-- **Yii::$app->user->id** kasutaja kood rakenduses (mitte kasutaja id VAU-s)
-- **Yii::$app->user->identity->vauData** ****ei ole olemas**** (kasutada saab **$app->user->identity->eesnimi** jne)
+- **Yii::$app->user->id** on kasutaja kood rakenduses (mitte kasutaja id VAU-s)
+- **Yii::$app->user->identity->vauData** ei ole olemas (kasutada saab **$app->user->identity->eesnimi** jne)
 
 Kui me soovime, et kasutaja andmed rakenduses oleksid sünkroonitud kasutaja andmetega VAU-s, lülitame sisse **authOptions['dataMapping']['update']** ja kaardistame seosed VAU ja rakenduse andmete vahel **authOptions['dataMapping']['attributes']** abil. Sellise seadistuse korral kirjutatakse rakenduse andmed üle VAU andmetega iga kord, kui kasutaja VAU kaudu rakendusse siseneb:
 
