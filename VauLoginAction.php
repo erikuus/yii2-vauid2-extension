@@ -1,5 +1,4 @@
 <?php
-
 /**
  * VauLoginAction makes use of {@link VauSecurityManager} and {@link VauUserIdentity} to authenticate user based on VauID 2.0 protocol
  *

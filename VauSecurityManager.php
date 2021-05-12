@@ -1,5 +1,4 @@
 <?php
-
 /**
  * VauSecurityManager provides functions to encrypt and decrypt data based on VauID 2.0 protocol.
  *
