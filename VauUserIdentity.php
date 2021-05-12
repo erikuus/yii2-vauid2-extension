@@ -1,5 +1,4 @@
 <?php
-
 /**
  * VauUserIdentity class authenticates user based on VauID 2.0 protocol
  *
@@ -26,34 +25,7 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
 
     public $vauData = [];
     public $errorCode;
-    /**
-     * @var string JSON posted back by VAU after successful login.
-     * {
-     *   "id":3,
-     *   "type":1,
-     *   "firstname":"Erik",
-     *   "lastname":"Uus",
-     *   "fullname":"Erik Uus",
-     *   "birthday":"1973-07-30",
-     *   "email":"erik.uus@ra.ee",
-     *   "phone":"53225399",
-     *   "lang":"et",
-     *   "country":"EE",
-     *   "warning":false,
-     *   "safelogin":false,
-     *   "safehost":true,
-     *   "timestamp":"2020-01-27T14:42:31+02:00",
-     *   "roles":["ClientManager","EnquiryManager"]
-     * }
-     */
-    public $jsonData;
-    /**
-     * @var string a prefix for the name of the session variables storing user session data.
-     */
-    private $_keyPrefix;
-    /**
-     * @var Component the user model.
-     */
+
     private $_user;
 
     public function getUser()
@@ -61,80 +33,16 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
         return $this->_user;
     }
 
-    public function getId()
-    {
-        return $this->getState('__id');
-    }
-
-    public static function findIdentity($id)
-    {
-        $selfInstance = new self();
-        $data = $selfInstance->getState('__data', []);
-        return new static(['vauData' => $data]);
-    }
-
     /**
-     * Authenticates VAU user.
-     * @param array $options the authentication options. The array keys are
-     * 'accessRules' and 'dataMapping' and the array values are subarrays
-     * with keys as follows:
-     * <ul>
-     *     <li>accessRules</li>
-     *     <ul>
-     *         <li>safelogin: whether access is allowed only if user logged into
-     *         VAU using ID-card or Mobile-ID.</li>
-     *         <li>safehost: whether access is allowed only if user logged into
-     *         VAU from host that is recognized as safe in VauID 2.0 protocol.</li>
-     *         <li>safe: whether access is allowed only if at least one of the above conditions
-     *         are met, i.e. user logged into VAU using ID-card or Mobile-ID or from the safe host.</li>
-     *         <li>employee: whether access is allowed only if VAU user type is employee.</li>
-     *         <li>roles: the list of VAU role names; access is allowed only if user has at
-     *         least one role in VAU that is present in this list.</li>
-     *     </ul>
-     *     <li>dataMapping</li>
-     *     <ul>
-     *         <li>model: the name of the model that stores user data in the application.</li>
-     *         <li>scenario: the name of the scenario that is used to save VAU user data.</li>
-     *         <li>id: the name of the model attribute that stores VAU user id in the application.</li>
-     *         <li>create: whether new user should be created in application based on VAU user data
-     *         if there is no user with given VAU user id.</li>
-     *         <li>update: whether user data in application database should be overwritten with
-     *         VAU user data every time user is authenticated.</li>
-     *         <li>attributes: the list of mapping VauID 2.0 user data elements onto user model
-     *         attributes in the application.</li>
-     *     </ul>
-     * </ul>
-     * <pre>
-     * [
-     *     'accessRules' => [
-     *         'safelogin' => true,
-     *         'safehost' => true,
-     *         'safe' => true,
-     *         'employee' => true,
-     *         'roles' => [
-     *             'ClientManager',
-     *             'EnquiryManager'
-     *         ]
-     *     ],
-     *     'dataMapping' => [
-     *         'model' => 'User',
-     *         'scenario' => 'vauid',
-     *         'id' => 'vau_id',
-     *         'create' => false,
-     *         'update' => false,
-     *         'attributes' => [
-     *             'firstname' => 'first_name',
-     *             'lastname' => 'last_name'
-     *         ]
-     *     ]
-     * ]
-     * </pre>
-     * @return boolean whether authentication succeeds.
+     * Authenticates VAU user
+     * @var string $data the data posted back by VAU after successful login
+     * @param array $options the authentication options
+     * @return boolean whether authentication succeeds
      */
-    public function authenticate($options = [])
+    public function authenticate($data, $options = [])
     {
         // decode json into array
-        $vauUserData = Json::decode($this->jsonData);
+        $vauUserData = Json::decode($data);
 
         // validate json
         if (json_last_error() == JSON_ERROR_NONE) {
@@ -149,7 +57,6 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
                         $modelName = ArrayHelper::getValue($options, 'dataMapping.model');
                         $scenario = ArrayHelper::getValue($options, 'dataMapping.scenario');
                         $vauIdAttribute = ArrayHelper::getValue($options, 'dataMapping.id');
-                        $userNameAttribute = ArrayHelper::getValue($options, 'dataMapping.name');
                         $enableCreate = ArrayHelper::getValue($options, 'dataMapping.create');
                         $enableUpdate = ArrayHelper::getValue($options, 'dataMapping.update');
                         $syncAttributes = ArrayHelper::getValue($options, 'dataMapping.attributes');
@@ -202,9 +109,8 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
                         }
                     } else {
                         // assign identity
-                        $this->_user = new static(['id'=>$vauUserData['id']]);
-                        $this->setState('__id', $vauUserData['id']);
-                        $this->setState('__data', $vauUserData);
+                        Yii::$app->session->set('__data', $vauUserData);
+                        $this->_user = new static();
                         $this->errorCode = self::ERROR_NONE;
                     }
                 } else {
@@ -255,78 +161,17 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
         return true;
     }
 
-    /**
-     * Sets the data for the user.
-     *
-     * @param mixed $value the unique identifier for the user
-     */
-    protected function setId($value)
+    public function getId()
     {
-        $this->setState('__id', $value);
+        $data = Yii::$app->session->get('__data');
+        return isset($data['id']) ? $data['id'] : null;
     }
 
-    /**
-     * Sets the data for the user.
-     *
-     * @param string $data the user data in json format
-     */
-    protected function setData($data)
+    public static function findIdentity($id)
     {
-        $this->setState('__data', $data);
-    }
-
-    /**
-     * Returns the value of a variable that is stored in user session.
-     *
-     * @param string $key variable name
-     * @param mixed $defaultValue default value
-     * @return mixed the value of the variable. If it doesn't exist in the session,
-     * the provided default value will be returned
-     * @see setState
-     */
-    protected function getState($key, $defaultValue = null)
-    {
-        $key=$this->getStateKeyPrefix() . $key;
-        return isset($_SESSION[$key]) ? $_SESSION[$key] : $defaultValue;
-    }
-
-    /**
-     * Stores a variable in user session.
-     *
-     * @param string $key variable name
-     * @param mixed $value variable value
-     * @param mixed $defaultValue default value. If $value===$defaultValue, the variable will be
-     * removed from the session
-     * @see getState
-     */
-    protected function setState($key, $value, $defaultValue = null)
-    {
-        $key=$this->getStateKeyPrefix() . $key;
-        if ($value===$defaultValue) {
-            unset($_SESSION[$key]);
-        } else {
-            $_SESSION[$key]=$value;
-        }
-    }
-
-    /**
-     * @return string a prefix for the name of the session variables storing user session data.
-     */
-    protected function getStateKeyPrefix()
-    {
-        if ($this->_keyPrefix!==null) {
-            return $this->_keyPrefix;
-        } else {
-            return $this->_keyPrefix=md5('Yii.' . get_class($this) . '.' . Yii::$app->id);
-        }
-    }
-
-    /**
-     * @param string $value a prefix for the name of the session variables storing user session data.
-     */
-    protected function setStateKeyPrefix($value)
-    {
-        $this->_keyPrefix=$value;
+        $selfInstance = new self();
+        $data = Yii::$app->session->get('__data');
+        return new static(['vauData' => $data]);
     }
 
     public function getAuthKey()
