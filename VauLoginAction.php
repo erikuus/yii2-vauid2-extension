@@ -17,6 +17,7 @@ use yii\base\InvalidConfigException;
 use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
 use rahvusarhiiv\vauid\VauUserIdentity;
+use rahvusarhiiv\vauid\VauAccessDeniedException;
 
 class VauLoginAction extends Action
 {
@@ -53,43 +54,30 @@ class VauLoginAction extends Action
      */
     public function run()
     {
-        if (isset($_POST['postedData'])) {
-            if (Yii::$app->has($this->securityManagerName)) {
-                $jsonData=Yii::$app->{$this->securityManagerName}->decrypt($_POST['postedData']);
-            } else {
-                throw new InvalidConfigException('The "VauSecurityManager" component have to be defined in configuration file.');
-            }
+        if (!isset($_POST['postedData'])) {
+            throw new BadRequestHttpException('Bad request. Please do not repeat this request again.');
+        }
 
-            $identity=new VauUserIdentity();
-            $identity->jsonData=$jsonData;
-            $identity->authenticate($this->authOptions);
-            if ($identity->errorCode==VauUserIdentity::ERROR_NONE) {
-                if (Yii::$app->user->login($identity->getUser())) {
-                    $this->controller->redirect($this->redirectUrl ? $this->redirectUrl : Yii::$app->user->returnUrl);
-                } else {
-                    throw new Exception('Login failed.');
-                }
-            } elseif ($identity->errorCode==VauUserIdentity::ERROR_UNAUTHORIZED) {
-                throw new ForbiddenHttpException('You do not have the proper credential to access this page.');
-            } else {
-                if ($this->enableLogging===true) {
-                    switch ($identity->errorCode) {
-                        case VauUserIdentity::ERROR_INVALID_DATA:
-                            Yii::error('Invalid VAU login request: ' . $jsonData);
-                            break;
-                        case VauUserIdentity::ERROR_EXPIRED_DATA:
-                            Yii::error('Expired VAU login request: ' . $jsonData);
-                            break;
-                        case VauUserIdentity::ERROR_SYNC_DATA:
-                            Yii::error('Failed VAU user data sync: ' . $jsonData);
-                            break;
-                        default:
-                            Yii::error('Unknown error code: ' . $identity->errorCode);
-                    }
-                }
-                throw new BadRequestHttpException('Bad request. Please do not repeat this request again.');
-            }
+        if (Yii::$app->has($this->securityManagerName)) {
+            $jsonData=Yii::$app->{$this->securityManagerName}->decrypt($_POST['postedData']);
         } else {
+            throw new InvalidConfigException('The "VauSecurityManager" component have to be defined in configuration file.');
+        }
+
+        try {
+            $identity=new VauUserIdentity();
+            $identity->authenticate($jsonData, $this->authOptions);
+            if (Yii::$app->user->login($identity->getUser())) {
+                $this->controller->redirect($this->redirectUrl ? $this->redirectUrl : Yii::$app->user->returnUrl);
+            } else {
+                throw new Exception('Login failed.');
+            }
+        } catch (XVauAccessDeniedException $e) {
+            throw new ForbiddenHttpException('You do not have the proper credential to access this page.');
+        } catch (Exception $e) {
+            if ($this->enableLogging) {
+                Yii::error($e->getMessage() . PHP_EOL . $jsonData);
+            }
             throw new BadRequestHttpException('Bad request. Please do not repeat this request again.');
         }
     }

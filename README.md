@@ -90,8 +90,9 @@ Suuna **SiteController::actionLogin** VauID sisselogimise teenuse aadressile, mÃ
 ```php
 public function actionLogin()
 {
+    $vauUrl = "https://www.ra.ee/vau/index.php/site/login?v=2&s=user_role&remoteUrl=";    
     $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/vauLogin", "https");
-    $this->redirect("https://www.ra.ee/vau/index.php/site/login?v=2&s=user_role&remoteUrl" . $remoteUrl);
+    $this->redirect($vauUrl . $remoteUrl);
 }
 ```
 
@@ -247,8 +248,9 @@ Suuna **SiteController::actionLogin** VauID sisselogimise teenuse aadressile, mÃ
 ```php
 public function actionLogin()
 {
+    $vauUrl = "https://www.ra.ee/vau/index.php/site/login?v=2&s=user_role&remoteUrl=";
     $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/vauLogin", "https");
-    $this->redirect("https://www.ra.ee/vau/index.php/site/login?v=2&s=user_role&remoteUrl" . $remoteUrl);
+    $this->redirect($vauUrl . $remoteUrl);
 }
 ```
 

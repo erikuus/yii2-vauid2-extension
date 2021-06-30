@@ -14,17 +14,11 @@ use Yii;
 use yii\base\Exception;
 use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
+use rahvusarhiiv\vauid\VauAccessDeniedException;
 
 class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityInterface
 {
-    const ERROR_NONE = 0;
-    const ERROR_INVALID_DATA = 1;
-    const ERROR_EXPIRED_DATA = 2;
-    const ERROR_SYNC_DATA = 3;
-    const ERROR_UNAUTHORIZED = 4;
-
     public $vauData = [];
-    public $errorCode;
 
     private $_user;
 
@@ -35,130 +29,227 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
 
     /**
      * Authenticates VAU user
-     * @var string $data the data posted back by VAU after successful login
+     * @param string $data the data posted back by VAU after successful login
      * @param array $options the authentication options
-     * @return boolean whether authentication succeeds
+     * @param integer $requestLifetime the number of seconds VAU postback is valid
+     * @throws Exception or VauAccessDeniedException if authentication fails
      */
-    public function authenticate($data, $options = [])
+    public function authenticate($data, $options = [], $requestLifetime = 60)
     {
-        // decode json into array
-        $vauUserData = Json::decode($data);
+        $vauUserData=$this->decodeVauUserData();
 
-        // validate json
-        if (json_last_error() == JSON_ERROR_NONE) {
-            // validate that data was posted within one minute
-            if ((time()-strtotime($vauUserData['timestamp'])) < 60) {
-                // validate access rules
-                if ($this->checkAccess($vauUserData, $options)) {
-                    // authenticate user in application database and
-                    // sync VAU and application user data if required
-                    if (ArrayHelper::getValue($options, 'dataMapping')) {
-                        // set variables for convenience
-                        $modelName = ArrayHelper::getValue($options, 'dataMapping.model');
-                        $scenario = ArrayHelper::getValue($options, 'dataMapping.scenario');
-                        $vauIdAttribute = ArrayHelper::getValue($options, 'dataMapping.id');
-                        $enableCreate = ArrayHelper::getValue($options, 'dataMapping.create');
-                        $enableUpdate = ArrayHelper::getValue($options, 'dataMapping.update');
-                        $syncAttributes = ArrayHelper::getValue($options, 'dataMapping.attributes');
+        $this->checkVauRequestTimestamp($vauUserData['timestamp'], $requestLifetime);
+        $this->checkAccess($vauUserData, $options);
 
-                        // check required
-                        if (!$modelName || !$vauIdAttribute) {
-                            throw new Exception('Model name and vauid have to be set in data mapping!');
-                        }
-
-                        $user = $modelName::findOne([
-                            $vauIdAttribute => (int)$vauUserData['id']
-                        ]);
-
-                        // if there is no user with given vau id
-                        // create new user if $enableCreate is true
-                        // otherwise access is denied
-                        if ($user === null) {
-                            if ($enableCreate) {
-                                $user = $scenario ? new $modelName(['scenario' => $scenario]) : new $modelName();
-                                $user->{$vauIdAttribute} = $vauUserData['id'];
-
-                                foreach ($syncAttributes as $key => $attribute) {
-                                    $user->{$attribute} = ArrayHelper::getValue($vauUserData, $key);
-                                }
-
-                                if (!$user->save()) {
-                                    $this->errorCode = self::ERROR_SYNC_DATA;
-                                }
-                            } else {
-                                $this->errorCode = self::ERROR_UNAUTHORIZED;
-                            }
-                        } elseif ($enableUpdate) {
-                            if ($scenario) {
-                                $user->scenario = $scenario;
-                            }
-
-                            foreach ($syncAttributes as $key => $attribute) {
-                                $user->{$attribute} = ArrayHelper::getValue($vauUserData, $key);
-                            }
-
-                            if (!$user->save()) {
-                                $this->errorCode = self::ERROR_SYNC_DATA;
-                            }
-                        }
-
-                        if (!in_array($this->errorCode, [self::ERROR_UNAUTHORIZED, self::ERROR_SYNC_DATA])) {
-                            // assign identity
-                            $this->_user = $user;
-                            $this->errorCode = self::ERROR_NONE;
-                        }
-                    } else {
-                        // assign identity
-                        Yii::$app->session->set('__data', $vauUserData);
-                        $this->_user = new static();
-                        $this->errorCode = self::ERROR_NONE;
-                    }
+        if (ArrayHelper::getValue($options, 'dataMapping')) {
+            $this->checkRequiredDataMapping($options);
+            $user=$this->findUser($vauUserData, $options);
+            if ($user === null) {
+                if (ArrayHelper::getValue($options, 'dataMapping.create')) {
+                    $user=$this->createUser($vauUserData, $options);
                 } else {
-                    $this->errorCode = self::ERROR_UNAUTHORIZED;
+                    throw new VauAccessDeniedException('Access denied because user not found and "create" not enabled!');
                 }
-            } else {
-                $this->errorCode = self::ERROR_EXPIRED_DATA;
+            } elseif (ArrayHelper::getValue($options, 'dataMapping.update')) {
+                $user=$this->updateUser($user, $vauUserData, $options);
             }
+            $this->_user = $user;
         } else {
-            $this->errorCode = self::ERROR_INVALID_DATA;
+            Yii::$app->session->set('__data', $vauUserData);
+            $this->_user = new static();
         }
+    }
 
-        return !$this->errorCode;
+    /**
+     * Decode JSON posted back by VAU after successful login
+     * @return array VAU user data
+     * @throws Exception if decoding fails
+     */
+    protected function decodeVauUserData()
+    {
+        $vauUserData=CJSON::decode($this->jsonData);
+        if (json_last_error() == JSON_ERROR_NONE) {
+            return $vauUserData;
+        } else {
+            throw new Exception('Failed to decode json posted back by VAU!');
+        }
+    }
+
+    /**
+     * Check whether VAU request timestamp is valid
+     * @param integer $vauRequestTimestamp the unix time when VAU postback was created
+     * @param integer $requestLifetime the number of seconds VAU postback is valid
+     * @throws Exception if VAU request timestamp is not valid
+     */
+    protected function checkVauRequestTimestamp($vauRequestTimestamp, $requestLifetime)
+    {
+        if ((time() - strtotime($vauRequestTimestamp)) > $requestLifetime) {
+            throw new Exception('Request timestamp posted back by VAU is not valid!');
+        }
     }
 
     /**
      * Check whether user can be authenticated by access rules
      * @param array $vauUserData the user data based on VauID 2.0 protocol
      * @param array $authOptions the authentication options
-     * @return boolean whether access is granted
-     * @see authenticate()
+     * @throws VauAccessDeniedException if access is denied
      */
     protected function checkAccess($vauUserData, $authOptions)
     {
-        if (ArrayHelper::getValue($authOptions, 'accessRules.safelogin') === true && $vauUserData['safelogin'] !== true) {
-            return false;
-        }
-
-        if (ArrayHelper::getValue($authOptions, 'accessRules.safehost') === true && $vauUserData['safehost'] !== true) {
-            return false;
-        }
-
-        if (ArrayHelper::getValue($authOptions, 'accessRules.safe') === true && $vauUserData['safelogin'] !== true && $vauUserData['safehost'] !== true) {
-            return false;
-        }
-
-        if (ArrayHelper::getValue($authOptions, 'accessRules.employee') === true && $vauUserData['type'] != 1) {
-            return false;
-        }
+        $this->checkAccessBySafeloginRule(ArrayHelper::getValue($authOptions, 'accessRules.safelogin'), $vauUserData['safelogin']);
+        $this->checkAccessBySafehostRule(ArrayHelper::getValue($authOptions, 'accessRules.safehost'), $vauUserData['safehost']);
+        $this->checkAccessBySafeRule(ArrayHelper::getValue($authOptions, 'accessRules.safe'), $vauUserData['safelogin'], $vauUserData['safehost']);
+        $this->checkAccessByEmployeeRule(ArrayHelper::getValue($authOptions, 'accessRules.employee'), $vauUserData['type']);
 
         $accessRulesRoles = ArrayHelper::getValue($authOptions, 'accessRules.roles', []);
         $vauUserDataRoles = ArrayHelper::getValue($vauUserData, 'roles', []);
+        $this->checkAccessByRolesRule($accessRulesRoles, $vauUserDataRoles);
+    }
 
+    /**
+     * Check whether user can be authenticated by safelogin access rules
+     * @param boolean $accessRulesSafelogin the safelogin flag in access rules
+     * @param boolean $vauUserDataSafelogin the safelogin flag in VAU postback
+     * @throws VauAccessDeniedException if access is denied
+     */
+    protected function checkAccessBySafeloginRule($accessRulesSafelogin, $vauUserDataSafelogin)
+    {
+        if ($accessRulesSafelogin === true && $vauUserDataSafelogin !== true) {
+            throw new VauAccessDeniedException('Access denied by safelogin rule!');
+        }
+    }
+
+    /**
+     * Check whether user can be authenticated by safehost access rules
+     * @param boolean $accessRulesSafehost the safehost flag in access rules
+     * @param boolean $vauUserDataSafehost the safehost flag in VAU postback
+     * @throws VauAccessDeniedException if access is denied
+     */
+    protected function checkAccessBySafehostRule($accessRulesSafehost, $vauUserDataSafehost)
+    {
+        if ($accessRulesSafehost === true && $vauUserDataSafehost !== true) {
+            throw new VauAccessDeniedException('Access denied by safehost rule!');
+        }
+    }
+
+    /**
+     * Check whether user can be authenticated by safe access rules
+     * @param boolean $accessRulesSafe the safe flag in access rules
+     * @param boolean $vauUserDataSafelogin the safelogin flag in VAU postback
+     * @param boolean $vauUserDataSafehost the safehost flag in VAU postback
+     * @throws VauAccessDeniedException if access is denied
+     */
+    protected function checkAccessBySafeRule($accessRulesSafe, $vauUserDataSafelogin, $vauUserDataSafehost)
+    {
+        if ($accessRulesSafe === true && $vauUserDataSafelogin !== true && $vauUserDataSafehost !== true) {
+            throw new VauAccessDeniedException('Access denied by safe rule!');
+        }
+    }
+
+    /**
+     * Check whether user can be authenticated by employee access rules
+     * @param boolean $accessRulesEmployee the access rule whether
+     * @param integer $vauUserDataType the type of user in VAU
+     * @throws VauAccessDeniedException if access is denied
+     */
+    protected function checkAccessByEmployeeRule($accessRulesEmployee, $vauUserDataType)
+    {
+        if ($accessRulesEmployee === true && $vauUserDataType != 1) {
+            throw new VauAccessDeniedException('Access denied by employee rule!');
+        }
+    }
+
+    /**
+     * Check whether user can be authenticated by roles access rules
+     * @param array $accessRulesRoles the list of role names in access rules
+     * @param array $vauUserDataRoles the list of role names assigned to user in VAU
+     * @throws VauAccessDeniedException if access is denied
+     */
+    protected function checkAccessByRolesRule($accessRulesRoles, $vauUserDataRoles)
+    {
         if ($accessRulesRoles !== [] && array_intersect($accessRulesRoles, $vauUserDataRoles) === []) {
-            return false;
+            throw new VauAccessDeniedException('Access denied by roles rule!');
+        }
+    }
+
+    /**
+     * Check whether required data mapping parameters are set
+     * @param array $authOptions the authentication options
+     * @throws Exception if data mapping is incomplete
+     */
+    protected function checkRequiredDataMapping($authOptions)
+    {
+        if (!ArrayHelper::getValue($authOptions, 'dataMapping.model') || !ArrayHelper::getValue($authOptions, 'dataMapping.id')) {
+            throw new Exception('Model name and vauid have to be set in data mapping!');
+        }
+    }
+
+    /**
+     * Find user
+     * @param array $vauUserData the user data based on VauID 2.0 protocol
+     * @param array $authOptions the authentication options
+     * @return ActiveRecord the user data | null
+     */
+    protected function findUser($vauUserData, $authOptions)
+    {
+        $modelName = ArrayHelper::getValue($options, 'dataMapping.model');
+
+        return $modelName::findOne([
+            ArrayHelper::getValue($options, 'dataMapping.id') => (int)$vauUserData['id']
+        ]);
+    }
+
+    /**
+     * Create new user
+     * @param array $vauUserData the user data based on VauID 2.0 protocol
+     * @param array $authOptions the authentication options
+     * @return ActiveRecord the user data
+     * @throws Exception if save fails
+     */
+    protected function createUser($vauUserData, $authOptions)
+    {
+        $modelName = ArrayHelper::getValue($authOptions, 'dataMapping.model');
+        $scenario = ArrayHelper::getValue($authOptions, 'dataMapping.scenario');
+
+        $user = $scenario ? new $modelName(['scenario' => $scenario]) : new $modelName();
+        $user->{ArrayHelper::getValue($authOptions, 'dataMapping.id')} = $vauUserData['id'];
+
+        foreach (ArrayHelper::getValue($authOptions, 'dataMapping.attributes') as $key => $attribute) {
+            $user->{$attribute} = ArrayHelper::getValue($vauUserData, $key);
         }
 
-        return true;
+        if (!$user->save()) {
+            throw new Exception('Failed to save VAU user data into application database!');
+        }
+
+        return $user;
+    }
+
+    /**
+     * Update user
+     * @param CActiveRecord the user object
+     * @param array $vauUserData the user data based on VauID 2.0 protocol
+     * @param array $authOptions the authentication options
+     * @return ActiveRecord the user data
+     * @throws Exception if save fails
+     */
+    protected function updateUser($user, $vauUserData, $authOptions)
+    {
+        $scenario = ArrayHelper::getValue($authOptions, 'dataMapping.scenario');
+
+        if ($scenario) {
+            $user->scenario = $scenario;
+        }
+
+        foreach (ArrayHelper::getValue($authOptions, 'dataMapping.attributes') as $key => $attribute) {
+            $user->{$attribute} = ArrayHelper::getValue($vauUserData, $key);
+        }
+
+        if (!$user->save()) {
+            throw new Exception('Failed to save VAU user data into application database!');
+        }
+
+        return $user;
     }
 
     public function getId()
