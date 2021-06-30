@@ -76,7 +76,7 @@ class VauLoginAction extends Action
             } else {
                 throw new Exception('Login failed.');
             }
-        } catch (XVauAccessDeniedException $e) {
+        } catch (VauAccessDeniedException $e) {
             throw new ForbiddenHttpException('You do not have the proper credential to access this page.');
         } catch (Exception $e) {
             if ($this->enableLogging) {

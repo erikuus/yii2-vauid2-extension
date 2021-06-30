@@ -193,10 +193,10 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
      */
     protected function findUser($vauUserData, $authOptions)
     {
-        $modelName = ArrayHelper::getValue($options, 'dataMapping.model');
+        $modelName = ArrayHelper::getValue($authOptions, 'dataMapping.model');
 
         return $modelName::findOne([
-            ArrayHelper::getValue($options, 'dataMapping.id') => (int)$vauUserData['id']
+            ArrayHelper::getValue($authOptions, 'dataMapping.id') => (int)$vauUserData['id']
         ]);
     }
 
