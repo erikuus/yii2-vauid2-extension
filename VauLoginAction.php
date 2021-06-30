@@ -37,6 +37,10 @@ class VauLoginAction extends Action
      */
     public $authOptions = [];
     /**
+     * @var integer the number of seconds VAU postback is valid.
+     */
+    public $requestLifetime = 60;
+    /**
      * @var boolean $enableLogging whether to log failed login requests
      */
     public $enableLogging = false;
@@ -66,7 +70,7 @@ class VauLoginAction extends Action
 
         try {
             $identity=new VauUserIdentity();
-            $identity->authenticate($jsonData, $this->authOptions);
+            $identity->authenticate($jsonData, $this->authOptions, $this->requestLifetime);
             if (Yii::$app->user->login($identity->getUser())) {
                 $this->controller->redirect($this->redirectUrl ? $this->redirectUrl : Yii::$app->user->returnUrl);
             } else {
