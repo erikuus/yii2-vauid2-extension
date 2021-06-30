@@ -36,7 +36,7 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
      */
     public function authenticate($data, $options = [], $requestLifetime = 60)
     {
-        $vauUserData=$this->decodeVauUserData();
+        $vauUserData=$this->decodeVauUserData($data);
 
         $this->checkVauRequestTimestamp($vauUserData['timestamp'], $requestLifetime);
         $this->checkAccess($vauUserData, $options);
@@ -62,12 +62,13 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
 
     /**
      * Decode JSON posted back by VAU after successful login
+     * @param string $data the json encoded VAU user data
      * @return array VAU user data
      * @throws Exception if decoding fails
      */
-    protected function decodeVauUserData()
+    protected function decodeVauUserData($data)
     {
-        $vauUserData=Json::decode($this->jsonData);
+        $vauUserData=Json::decode($data);
         if (json_last_error() == JSON_ERROR_NONE) {
             return $vauUserData;
         } else {
