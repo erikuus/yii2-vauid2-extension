@@ -67,7 +67,7 @@ class VauUserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityI
      */
     protected function decodeVauUserData()
     {
-        $vauUserData=CJSON::decode($this->jsonData);
+        $vauUserData=Json::decode($this->jsonData);
         if (json_last_error() == JSON_ERROR_NONE) {
             return $vauUserData;
         } else {
