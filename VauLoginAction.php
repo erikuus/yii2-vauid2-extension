@@ -78,7 +78,7 @@ class VauLoginAction extends Action
             }
         } catch (VauAccessDeniedException $e) {
             throw new ForbiddenHttpException('You do not have the proper credential to access this page.');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if ($this->enableLogging) {
                 Yii::error($e->getMessage() . PHP_EOL . $jsonData);
             }
