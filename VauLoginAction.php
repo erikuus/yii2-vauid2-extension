@@ -46,29 +46,25 @@ class VauLoginAction extends Action
     public $enableLogging = false;
 
     /**
-     * Disables csrf validation to handle VAU POST request
+     * Initialize action
      */
     public function init()
     {
+        if (!Yii::$app->has($this->securityManagerName)) {
+            throw new InvalidConfigException('The "VauSecurityManager" component have to be defined in configuration file.');
+        }
+
+        // disables csrf validation to handle VAU POST request
         $this->controller->enableCsrfValidation = false;
     }
 
     /**
-     * Logins user into application based on data posted by VAU after successful login
+     * Login user into application based on data posted by VAU after successful login
      */
     public function run()
     {
-        if (!isset($_POST['postedData'])) {
-            throw new BadRequestHttpException('Bad request. Please do not repeat this request again.');
-        }
-
-        if (Yii::$app->has($this->securityManagerName)) {
-            $jsonData=Yii::$app->{$this->securityManagerName}->decrypt($_POST['postedData']);
-        } else {
-            throw new InvalidConfigException('The "VauSecurityManager" component have to be defined in configuration file.');
-        }
-
         try {
+            $jsonData=Yii::$app->{$this->securityManagerName}->decrypt($_POST['postedData']);
             $identity=new VauUserIdentity();
             $identity->authenticate($jsonData, $this->authOptions, $this->requestLifetime);
             if (Yii::$app->user->login($identity->getUser())) {
@@ -80,7 +76,7 @@ class VauLoginAction extends Action
             throw new ForbiddenHttpException('You do not have the proper credential to access this page.');
         } catch (\Exception $e) {
             if ($this->enableLogging) {
-                Yii::error($e->getMessage() . PHP_EOL . $jsonData);
+                Yii::error($e->getMessage());
             }
             throw new BadRequestHttpException('Bad request. Please do not repeat this request again.');
         }
