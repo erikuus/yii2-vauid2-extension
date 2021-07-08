@@ -64,8 +64,8 @@ class VauLoginAction extends Action
     public function run()
     {
         try {
-            $jsonData=Yii::$app->{$this->securityManagerName}->decrypt($_POST['postedData']);
-            $identity=new VauUserIdentity();
+            $jsonData = Yii::$app->{$this->securityManagerName}->decrypt($_POST['postedData']);
+            $identity = new VauUserIdentity();
             $identity->authenticate($jsonData, $this->authOptions, $this->requestLifetime);
             if (Yii::$app->user->login($identity->getUser())) {
                 $this->controller->redirect($this->redirectUrl ? $this->redirectUrl : Yii::$app->user->returnUrl);
