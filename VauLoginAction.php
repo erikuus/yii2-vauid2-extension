@@ -22,13 +22,13 @@ use rahvusarhiiv\vauid\VauAccessDeniedException;
 class VauLoginAction extends Action
 {
     /**
-     * @var string $securityManagerName the name of the vauid security manager {@link VauUserIdentity}.
-     * Defaults to 'vauSecurityManager'.
+     * @var string $securityManagerName the name of the vauid security manager {@link VauUserIdentity}
+     * Defaults to 'vauSecurityManager'
      */
     public $securityManagerName = 'vauSecurityManager';
     /**
-     * @var string $redirectUrl the url user will be redirected after successful login.
-     * If empty, Yii::$app->user->returnUrl will be used.
+     * @var string $redirectUrl the url user will be redirected after successful login
+     * If empty, Yii::$app->user->returnUrl will be used
      */
     public $redirectUrl;
     /**
@@ -37,7 +37,7 @@ class VauLoginAction extends Action
      */
     public $authOptions = [];
     /**
-     * @var integer the number of seconds VAU postback is valid.
+     * @var integer $requestLifetime the number of seconds VAU postback is valid
      */
     public $requestLifetime = 60;
     /**
