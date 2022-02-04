@@ -100,7 +100,7 @@ Suuna väljalogimise link VauID väljalogimise teenuse aadressile, määrates **
 
 ```php
 $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/logout", "https");
-echo Html::a("Logout", "https://www.ra.ee/vau/index.php/site/logout?remoteUrl=" . $remoteUrl;
+echo Html::a("Logout", "https://www.ra.ee/vau/index.php/site/logout?remoteUrl=" . $remoteUrl);
 ```
 
 Sellise seadistuse puhul loob laiendus pärast edukat VAU kaudu sisselogimist rakenduses sessiooni, kus:
@@ -258,7 +258,7 @@ Suuna väljalogimise link VauID väljalogimise teenuse aadressile, määrates **
 
 ```php
 $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/logout", "https");
-echo Html::a("Logout", "https://www.ra.ee/vau/index.php/site/logout?remoteUrl=" . $remoteUrl;
+echo Html::a("Logout", "https://www.ra.ee/vau/index.php/site/logout?remoteUrl=" . $remoteUrl);
 ```
 
 Nüüd, kui me soovime teha nii, et rakenduse kasutajad on vastavuses VAU kasutajatega ja rakendusse sisselogimine käib VAU kaudu, siis peame kõigepealt lisama tabelisse uue tulba VAU kasutaja ID jaoks:
