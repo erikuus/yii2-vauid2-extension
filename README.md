@@ -13,7 +13,7 @@ Lisa rakenduse **composer.json** faili paketi nimi ja versioon:
 
 ```json
 "require": {
-    "rahvusarhiiv/vauid": "1.0"
+    "rahvusarhiiv/vauid": "dev-main"
 }
 ```
 
@@ -44,7 +44,7 @@ Lisa faili **vendor/yiisoft/extensions.php** järgmised read:
 ```php
 'rahvusarhiiv/vauid' => [
     'name' => 'rahvusarhiiv/vauid',
-    'version' => '1.0.0.0',
+    'version' => 'dev-main',
     'alias' => [
         '@rahvusarhiiv/vauid' => $vendorDir . '/rahvusarhiiv/vauid',
     ],
