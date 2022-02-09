@@ -1,4 +1,4 @@
-Yii 2 raamistiku laiendus VauID versiooni 2.0 kasutamiseks
+Yii 2 raamistiku laiendus VauID versiooni 2 kasutamiseks
 ==========================================================
 
 https://github.com/erikuus/yii2-vauid2-extension
@@ -63,12 +63,13 @@ Määra konfiguratsioonifailis **user** komponendi **identityClass** väärtusek
 ]
 ```
 
-Lisa konfiguratsioonifailis komponentide hulka **rahvusarhiiv\vauid\VauSecurityManager**, kus **###** asemel on salajane võti:
+Lisa konfiguratsioonifailis komponentide hulka **rahvusarhiiv\vauid\VauSecurityManager**, kus **###** asemel on salajane võti. Pane tähele, et vaikimisi versiooninumber on 2.0. Selleks, et VAU kaudu sisselogimine töötaks PHP 7.2 ja uuemate PHP versioonidega, tuleb kasutada VauSecurityManager versiooni 2.1, nagu on näidatud alljärgnevalt:
 
 ```php
 'vauSecurityManager' => [
     'class' => 'rahvusarhiiv\vauid\VauSecurityManager',
-    'validationKey' => '###'
+    'validationKey' => '###',
+    'version' => 2.1 
 ]
 ```
 
@@ -90,6 +91,7 @@ Suuna **SiteController::actionLogin** VauID sisselogimise teenuse aadressile, m�
 ```php
 public function actionLogin()
 {
+    // PHP >=7.2 kasuta v=2.1
     $vauUrl = "https://www.ra.ee/vau/index.php/site/login?v=2&s=user_role&remoteUrl=";    
     $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/vauLogin", "https");
     $this->redirect($vauUrl . $remoteUrl);
@@ -248,6 +250,7 @@ Suuna **SiteController::actionLogin** VauID sisselogimise teenuse aadressile, m�
 ```php
 public function actionLogin()
 {
+    // PHP >=7.2 kasuta v=2.1
     $vauUrl = "https://www.ra.ee/vau/index.php/site/login?v=2&s=user_role&remoteUrl=";
     $remoteUrl = Yii::$app->urlManager->createAbsoluteUrl("/site/vauLogin", "https");
     $this->redirect($vauUrl . $remoteUrl);

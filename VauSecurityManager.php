@@ -12,10 +12,21 @@ namespace rahvusarhiiv\vauid;
 
 use yii\base\Component;
 use yii\base\InvalidConfigException;
+use yii\base\Security;
 
 class VauSecurityManager extends Component
 {
+    public $version = 2.0;
+
+    private $_security;
     private $_key;
+
+    public function init()
+    {
+        if ($this->version > 2.0) {
+            $this->_security = new Security;
+        }
+    }
 
     public function setValidationKey($value)
     {
@@ -33,7 +44,12 @@ class VauSecurityManager extends Component
      */
     public function encrypt($data)
     {
-        return bin2hex($this->linencrypt($data));
+        if ($this->_security) {
+            $data = $this->_security->encryptByKey($data, $this->_key);
+        } else {
+            $data = $this->linencrypt($data);
+        }
+        return bin2hex($data);
     }
 
     protected function linencrypt($data)
@@ -51,7 +67,14 @@ class VauSecurityManager extends Component
      */
     public function decrypt($postedData)
     {
-        return $this->lindecrypt(hex2bin($postedData));
+        $binData=hex2bin($postedData);
+
+        if ($this->_security) {
+            $data = $this->_security->decryptByKey($binData, $this->_key);
+        } else {
+            $data = $this->lindecrypt($binData);
+        }
+        return $data;
     }
 
     protected function lindecrypt($encrypted)
